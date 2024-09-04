@@ -1,0 +1,52 @@
+#Root locus and Frequency response analysis
+import tkinter as tk
+from tkinter import ttk
+import control as ctrl
+import numpy as np
+import matplotlib.pyplot as plt
+dracula_bg = "#282a36"
+dracula_fg = "#f8f8f2"
+dracula_accent = "#bd93f9"
+dracula_entry_bg = "#44475a"
+dracula_entry_fg = "#f8f8f2"
+def plot_root_locus(num, den):
+    tf = ctrl.TransferFunction(num, den)
+    gains = np.linspace(0.0, 10.0, num=500)
+    ctrl.root_locus(tf, kvect=gains, plot=True)
+    plt.show()
+
+def plot_bode(num, den):
+    system = ctrl.TransferFunction(num, den)
+    ctrl.bode(system)
+    plt.show()
+def on_plot():
+    num = list(map(float, numerator_entry.get().split()))
+    den = list(map(float, denominator_entry.get().split()))
+    plot_type = plot_type_var.get()
+    
+    if plot_type == "Root Locus":
+        plot_root_locus(num, den)
+    elif plot_type == "Bode Plot":
+        plot_bode(num, den)
+root = tk.Tk()
+root.title("Control System Plotter")
+root.configure(bg=dracula_bg)
+style = ttk.Style()
+style.theme_use('clam')
+style.configure('TLabel', background=dracula_bg, foreground=dracula_fg)
+style.configure('TEntry', fieldbackground=dracula_entry_bg, foreground=dracula_entry_fg)
+style.configure('TButton', background=dracula_accent, foreground=dracula_fg)
+style.configure('TCombobox', fieldbackground=dracula_entry_bg, foreground=dracula_entry_fg)
+ttk.Label(root, text="Numerator Coefficients:").grid(column=0, row=0, padx=10, pady=10)
+numerator_entry = ttk.Entry(root, width=30)
+numerator_entry.grid(column=1, row=0, padx=10, pady=10)
+ttk.Label(root, text="Denominator Coefficients:").grid(column=0, row=1, padx=10, pady=10)
+denominator_entry = ttk.Entry(root, width=30)
+denominator_entry.grid(column=1, row=1, padx=10, pady=10)
+ttk.Label(root, text="Select Plot Type:").grid(column=0, row=2, padx=10, pady=10)
+plot_type_var = tk.StringVar(value="Root Locus")
+plot_type_menu = ttk.Combobox(root, textvariable=plot_type_var, values=["Root Locus", "Bode Plot"])
+plot_type_menu.grid(column=1, row=2, padx=10, pady=10)
+plot_button = ttk.Button(root, text="Plot", command=on_plot)
+plot_button.grid(column=0, row=3, columnspan=2, padx=10, pady=20)
+root.mainloop()
